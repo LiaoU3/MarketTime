@@ -12,17 +12,12 @@ DOWNLOAD_URL = ""
 LICENSE = "GPLv3"
 VERSION = "1.0.0"
 DESCRIPTION = "This is a tool to check the time in the market"
-LONG_DESCRIPTION = (HERE / "docs" / "README.md").read_text(encoding="utf8")
+LONG_DESCRIPTION = (HERE/"README.md").read_text(encoding="utf8")
 LONG_DESC_TYPE = "text/markdown"
-
-requirements = (HERE / "requirements.txt").read_text(encoding="utf8")
-INSTALL_REQUIRES = [s.strip() for s in requirements.split("\n")]
-
-dev_requirements = (HERE / "dev_requirements.txt").read_text(encoding="utf8")
-EXTRAS_REQUIRE = {"dev": [s.strip() for s in dev_requirements.split("\n")]}
-
-CLASSIFIERS = ["Programming Language :: Python :: 3.10"]
-PYTHON_REQUIRES = ">=3.7"
+INSTALL_REQUIRES = ["datetime"]
+EXTRAS_REQUIRE = {}
+CLASSIFIERS = []
+PYTHON_REQUIRES = ">=3.10"
 
 setup(
     name=PACKAGE_NAME,
