@@ -10,7 +10,7 @@ URL = "https://github.com/Liaou3/MarketTime"
 DOWNLOAD_URL = ""
 
 LICENSE = "GPLv3"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 DESCRIPTION = "This is a tool to check the time in the market"
 LONG_DESCRIPTION = (HERE/"README.md").read_text(encoding="utf8")
 LONG_DESC_TYPE = "text/markdown"
