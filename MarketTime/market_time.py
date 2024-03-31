@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from typing import Sequence
+from datetime import datetime, date, timedelta
+from typing import Sequence, Union
 
 
 class MarketTime:
@@ -16,33 +16,42 @@ class MarketTime:
             MarketTime.close_date_set.add(date_date)
 
     @staticmethod
-    def in_open_day(time: datetime = None) -> bool:
+    def _get_date_obj(time: Union[datetime, date] = None) -> date:
+        if isinstance(time, datetime):
+            date_obj = time.date()
+        elif isinstance(time, date):
+            date_obj = time
+        else:
+            date_obj = datetime.now().date()
+        return date_obj
+
+    @staticmethod
+    def in_open_day(time: Union[datetime, date] = None) -> bool:
         """
-        To check if the time is in the market open day.
+        To check if the time (datetime, date) is in the market open day.
         """
-        time = time or datetime.now()
-        date = time.date()
-        if date in MarketTime.close_date_set:
+        date_obj = MarketTime._get_date_obj(time)
+        if date_obj in MarketTime.close_date_set:
             return False
-        day = time.weekday()
-        if day > 4:
+        weekday = date_obj.weekday()
+        if weekday > 4:
             return False
         return True
 
     @staticmethod
-    def get_next_open_day(time: datetime = None) -> datetime:
+    def next_open_day(time: Union[datetime, date] = None) -> date:
         """Return the next market open day excluding today"""
-        time = time or datetime.now()
-        next_open_day = time + timedelta(days=1)
+        date_obj = MarketTime._get_date_obj(time)
+        next_open_day = date_obj + timedelta(days=1)
         while not MarketTime.in_open_day(next_open_day):
             next_open_day += timedelta(days=1)
         return next_open_day
 
     @staticmethod
-    def get_last_open_day(time: datetime = None) -> datetime:
+    def last_open_day(time: Union[datetime, date] = None) -> date:
         """Return the last market open day excluding today"""
-        time = time or datetime.now()
-        last_open_day = time - timedelta(days=1)
+        date_obj = MarketTime._get_date_obj(time)
+        last_open_day = date_obj - timedelta(days=1)
         while not MarketTime.in_open_day(last_open_day):
             last_open_day -= timedelta(days=1)
         return last_open_day
