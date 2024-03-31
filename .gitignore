@@ -3,3 +3,4 @@ MarketTime.egg-info/
 build/
 dist/
 *test*
+*token*
