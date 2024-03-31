@@ -1,37 +1,12 @@
 from datetime import datetime, timedelta, date
 from MarketTime.market_time import MarketTime
+from typing import Union
 
 
 class FutureMarketTime(MarketTime):
-    expiration_date_set = set()
 
     @staticmethod
-    def init_expiration_date_set_in_the_next_5_years(
-        time: datetime = None,
-    ) -> None:
-        """Init the expiration date set in the next 2 years based on 'time'.\n
-        The reason why we use a set to store the date instead of
-        dynamical check is the performance issue."""
-        time = time or datetime.now()
-        current_year = time.year
-        for year in range(current_year, current_year + 6):
-            for month in range(1, 13):
-                expiration_date = FutureMarketTime._get_third_wednesday(
-                    year, month
-                )
-                expiration_date_with_time = datetime.combine(
-                    expiration_date, datetime.min.time()
-                )
-                while not FutureMarketTime.in_open_day(
-                    expiration_date_with_time
-                ):
-                    expiration_date_with_time -= timedelta(days=1)
-                FutureMarketTime.expiration_date_set.add(
-                    expiration_date_with_time.date()
-                )
-
-    @staticmethod
-    def _get_third_wednesday(year: int, month: int) -> date:
+    def _third_wednesday(year: int, month: int) -> date:
         """
         Get the third Wednesday in the certain year month
         """
@@ -42,12 +17,23 @@ class FutureMarketTime(MarketTime):
         return third_wednesday
 
     @staticmethod
-    def in_expiration_day(time: datetime = None) -> datetime:
+    def _settelment_day(year: int, month: int) -> date:
+        settlement_day = FutureMarketTime._third_wednesday(year, month)
+        while not FutureMarketTime.in_open_day(settlement_day):
+            settlement_day -= timedelta(days=1)
+        return settlement_day
+
+    @staticmethod
+    def in_settlement_day(time: Union[datetime, date] = None) -> datetime:
         """Check if 'time' is in the expiration day"""
-        if time is None:
-            time = datetime.now()
-        date = time.date()
-        return date in FutureMarketTime.expiration_date_set
+        date_obj = FutureMarketTime._get_date_obj(time)
+        if 21 < date_obj.day:
+            return False
+        if date_obj == FutureMarketTime._settelment_day(
+            date_obj.year, date_obj.month
+        ):
+            return True
+        return False
 
     @staticmethod
     def in_open_time(time: datetime = None) -> bool:
@@ -57,9 +43,8 @@ class FutureMarketTime(MarketTime):
         08:45~13:45
         15:00~05:00 (+1)
         """
-        if time is None:
-            time = datetime.now()
-        if FutureMarketTime.in_expiration_day(time):
+        time = time or datetime.now()
+        if FutureMarketTime.in_settlement_day(time):
             morning_close_minute = 30
         else:
             morning_close_minute = 45
@@ -101,7 +86,7 @@ class FutureMarketTime(MarketTime):
 
     @staticmethod
     def next_open_time(time: datetime = None) -> datetime:
-        """Return the next market open time based on 'time'.\n
+        """Return the next market open time based on 'time'.
         If the 'time' is in the market time, return 'time'"""
         time = time or datetime.now()
         if FutureMarketTime.in_open_time(time):
@@ -122,24 +107,69 @@ class FutureMarketTime(MarketTime):
 
     @staticmethod
     def last_open_time(time: datetime = None) -> datetime:
-        """Return the last market open time based on 'time'.\n
+        """Return the last market open time based on 'time'.
         If the 'time' is in the market time, return 'time'"""
         time = time or datetime.now()
         if FutureMarketTime.in_open_time(time):
             return time
-        if FutureMarketTime.in_expiration_day(time):
-            morning_close_minute = 30
-        else:
-            morning_close_minute = 45
+        morning_close_minute = (
+            30 if FutureMarketTime.in_settlement_day(time) else 45
+        )
         night_close = time.replace(hour=5, minute=0, second=0, microsecond=0)
         morning_close = time.replace(
             hour=13, minute=morning_close_minute, second=0, microsecond=0
         )
         today_is_open_day = FutureMarketTime.in_open_day(time)
-        if today_is_open_day and time > morning_close:
+        if today_is_open_day and time >= morning_close:
             last_open_time = morning_close
         else:
             last_open_time = night_close
             while not FutureMarketTime.in_open_time(last_open_time):
                 last_open_time -= timedelta(days=1)
         return last_open_time
+
+    @staticmethod
+    def next_close_time(time: datetime = None) -> datetime:
+        time = time or datetime.now()
+        if not FutureMarketTime.in_open_time(time):
+            return time
+        morning_close_minute = (
+            30 if FutureMarketTime.in_settlement_day(time) else 45
+        )
+        night_close = time.replace(hour=5, minute=0, second=0, microsecond=0)
+        morning_close = time.replace(
+            hour=13, minute=morning_close_minute, second=0, microsecond=0
+        )
+        today_is_open_day = FutureMarketTime.in_open_day(time)
+        if today_is_open_day and time < morning_close:
+            if time < night_close:
+                next_close_time = night_close
+            else:
+                next_close_time = morning_close
+        else:
+            next_close_time = night_close
+            while not FutureMarketTime.in_open_time(next_close_time):
+                next_close_time += timedelta(days=1)
+        return next_close_time + timedelta(microseconds=1)
+
+    @staticmethod
+    def last_close_time(time: datetime = None) -> datetime:
+        """Return the last close time based on 'time.
+        If 'time' is in close time, return 'time'"""
+        """8:45 15:00"""
+        time = time or datetime.now()
+        if not FutureMarketTime.in_open_time(time):
+            return time
+        morning_open = time.replace(hour=8, minute=45, second=0, microsecond=0)
+        night_open = time.replace(hour=15, minute=0, second=0, microsecond=0)
+        today_is_open_day = FutureMarketTime.in_open_day(time)
+        if today_is_open_day and time >= morning_open:
+            if time > night_open:
+                last_close_time = night_open
+            else:
+                last_close_time = morning_open
+        else:
+            last_close_time = night_open - timedelta(days=1)
+            while not FutureMarketTime.in_open_time(last_close_time):
+                last_close_time -= timedelta(days=1)
+        return last_close_time - timedelta(microseconds=1)
