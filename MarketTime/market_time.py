@@ -5,6 +5,7 @@ from typing import Sequence, Union
 class MarketTime:
     close_date_set = set()
 
+    # test
     @staticmethod
     def init_close_date_set(close_date_list: Sequence[str] = None):
         """Init the market close date set.
