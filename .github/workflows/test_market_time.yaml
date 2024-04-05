@@ -26,8 +26,21 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt  # 如果有必要的話，根據您的專案設置來安裝相關的依賴
-
+        pip install -r requirements.txt
     - name: Run tests
       run: |
         python -m unittest tests/test_market_time.py
+
+    - name: Add test results to PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const results = `Test results:\n${process.env.unittests}`;
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: results
+          })
