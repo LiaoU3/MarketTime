@@ -7,7 +7,7 @@ class MarketTime:
 
     @staticmethod
     def init_close_date_set(close_date_list: Sequence[str] = None):
-        """Init the market close date set.\n
+        """Init the market close date set.
         The date string format should be 'YYYY-mm-dd'"""
         if close_date_list is None:
             return
