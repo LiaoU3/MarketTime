@@ -1,4 +1,4 @@
-name: Run Tests on PR with changes to market_time.py
+name: Run Tests on PR with changes to future_market_time.py
 
 on:
   pull_request:
@@ -30,4 +30,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest tests/test_market_time.py
+        python -m unittest tests/test_future_market_time.py
