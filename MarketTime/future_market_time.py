@@ -141,15 +141,18 @@ class FutureMarketTime(MarketTime):
             hour=13, minute=morning_close_minute, second=0, microsecond=0
         )
         today_is_open_day = FutureMarketTime.in_open_day(time)
-        if today_is_open_day and time < morning_close:
-            if time < night_close:
+        if today_is_open_day and time <= morning_close:
+            if time <= night_close:
                 next_close_time = night_close
             else:
                 next_close_time = morning_close
         else:
-            next_close_time = night_close
-            while not FutureMarketTime.in_open_time(next_close_time):
-                next_close_time += timedelta(days=1)
+            if time <= night_close:
+                next_close_time = night_close
+            else:
+                next_close_time = night_close + timedelta(days=1)
+                while not FutureMarketTime.in_open_time(next_close_time):
+                    next_close_time += timedelta(days=1)
         return next_close_time + timedelta(microseconds=1)
 
     @staticmethod
@@ -164,7 +167,7 @@ class FutureMarketTime(MarketTime):
         night_open = time.replace(hour=15, minute=0, second=0, microsecond=0)
         today_is_open_day = FutureMarketTime.in_open_day(time)
         if today_is_open_day and time >= morning_open:
-            if time > night_open:
+            if time >= night_open:
                 last_close_time = night_open
             else:
                 last_close_time = morning_open
