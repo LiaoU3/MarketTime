@@ -3,7 +3,7 @@ name: Run Tests on PR with changes to future_market_time.py
 on:
   pull_request:
     paths:
-      - 'MarketTime/market_time.py'
+      - 'MarketTime/future_market_time.py'
   workflow_dispatch:
 
 jobs:
