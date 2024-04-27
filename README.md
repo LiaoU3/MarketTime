@@ -1,18 +1,27 @@
 # MarketTime
 
-MarketTime is a Python module designed to track and detect market time in Taiwan, focusing on stock and futures markets. It provides functionalities to manage and analyze market time data, including determining whether the market is open, retrieving the next and last market open times, and checking for expiration days in futures markets.
+MarketTime is a Python module designed to track and detect market time in Taiwan,
+focusing on stock and futures markets. It provides functionalities to manage and
+analyze market time data, including determining whether the market is open,
+retrieving the next and last market open times, and checking for expiration
+days in futures markets.
 
 ## Introduction
 
 MarketTime offers two main classes:
 
-- **FutureMarketTime**: Extends MarketTime to handle futures markets, offering features such as identifying settlement days and predicting future market open and close times.
-- **StockMarketTime**: Extends MarketTime to handle stock markets, offering functions to determine whether a given time falls within stock market open hours, as well as predicting the next and last market open times.
+- **FutureMarketTime**: Extends MarketTime to handle futures markets, offering
+features such as identifying settlement days and predicting future market open
+and close times.
+- **StockMarketTime**: Extends MarketTime to handle stock markets,
+offering functions to determine whether a given time falls within
+stock market open hours, as well as predicting the next and last market open times.
 
 ## Features
 
 - **Market Time Detection**: Determine if the current time is within market hours.
-- **Next and Last Market Times**: Predict and retrieve the next and last market open times.
+- **Next and Last Market Times**: Predict and retrieve the next and last market
+open times.
 
 ## Installation
 
@@ -24,7 +33,8 @@ pip install MarketTime
 
 ## Usage
 
-Here is how you can use the `FutureMarketTime` and `StockMarketTime` in your Python scripts:
+Here is how you can use the `FutureMarketTime` and `StockMarketTime`
+in your Python scripts:
 
 ```python
 from MarketTime import FutureMarketTime as fmt, StockMarketTime as smt
@@ -93,4 +103,5 @@ print("Last stock market open time:", last_stock_open_time)
 
 ## Contribution
 
-Contributions are welcome! If you have any suggestions, feature requests, or bug reports, please feel free to open an issue or create a pull request on GitHub.
+Contributions are welcome! If you have any suggestions, feature requests,
+or bug reports, please feel free to open an issue or create a pull request on GitHub.
