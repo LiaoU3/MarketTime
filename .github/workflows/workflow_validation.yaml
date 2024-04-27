@@ -1,10 +1,11 @@
 name: Workflow validation
 
 on:
-  pull_request:
+  push:
     paths:
       - '.github/workflows/*'
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   workflow_validation:

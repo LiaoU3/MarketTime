@@ -1,9 +1,6 @@
 name: Run lint tests on PR with changes to any markdown file
 
 on:
-  push:
-    branches:
-      - markdown
   pull_request:
     paths:
       - '**/*.md'
