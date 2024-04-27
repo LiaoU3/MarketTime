@@ -1,7 +1,7 @@
 name: Workflow validation
 
 on:
-  push:
+  pull_request:
     paths:
       - '.github/workflows/*'
   workflow_dispatch:
