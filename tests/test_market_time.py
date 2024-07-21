@@ -23,6 +23,11 @@ class TestMarketTime(unittest.TestCase):
         )  # not in close_dates
         self.assertTrue(len(mt.close_date_set) == 2)
 
+    def test_init_close_date_set_with_none(self):
+        mt.close_date_set.clear()
+        mt.init_close_date_set(None)
+        self.assertEqual(len(mt.close_date_set), 0)
+
     def test__get_date_obj(self):
         time = datetime.now()
         self.assertTrue(time.date(), mt._get_date_obj(time))  # datetime
