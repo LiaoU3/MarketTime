@@ -8,6 +8,9 @@ class TestMarketTime(unittest.TestCase):
         close_dates = ["2024-04-04", "2024-04-05"]
         mt.init_close_date_set(close_dates)
 
+    def tearDown(self):
+        mt.close_date_set = set()
+
     def test_init_close_date_set(self):
         self.assertTrue(
             datetime(2024, 4, 4).date() in mt.close_date_set

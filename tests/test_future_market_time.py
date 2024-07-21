@@ -8,6 +8,9 @@ class TestFutureMarketTime(unittest.TestCase):
         close_dates = ["2024-04-17"]  # Assume 2024/04-17 is close
         fmt.init_close_date_set(close_dates)
 
+    def tearDown(self):
+        fmt.close_date_set = set()
+
     def test__third_wednesday(self):
         third_wednesday = fmt._third_wednesday(2024, 4)
         self.assertEqual(third_wednesday, datetime(2024, 4, 17).date())
