@@ -33,6 +33,7 @@ class TestMarketTime(unittest.TestCase):
         self.assertTrue(time.date(), mt._get_date_obj(time))  # datetime
         self.assertTrue(time.date(), mt._get_date_obj(time.date()))  # date
         self.assertTrue(isinstance(mt._get_date_obj(), date))  # None
+        self.assertRaises(TypeError, mt._get_date_obj, "Unexpected type")
 
     def test_in_open_day(self):
         open_day = datetime(2024, 4, 1)  # Monday

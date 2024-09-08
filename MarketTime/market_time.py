@@ -17,12 +17,14 @@ class MarketTime:
 
     @staticmethod
     def _get_date_obj(time: Union[datetime, date] = None) -> date:
-        if isinstance(time, datetime):
+        if time is None:
+            date_obj = datetime.now().date()
+        elif isinstance(time, datetime):
             date_obj = time.date()
         elif isinstance(time, date):
             date_obj = time
         else:
-            date_obj = datetime.now().date()
+            raise TypeError("Argument must be of type datetime, date, or None.")
         return date_obj
 
     @staticmethod
