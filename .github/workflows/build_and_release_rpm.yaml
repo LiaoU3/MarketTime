@@ -1,0 +1,67 @@
+name: MarketTime RPM Package build and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get version
+        id: set_version
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Install build tools
+        run: |
+          sudo dnf install -y rpm rpm-build rpmdevtools python3 python3-setuptools python3-devel
+
+      - name: Create Environment
+        run: |
+          rpmdev-setuptree
+          cp MarketTime.spec ~/rpmbuild/SPECS/
+          cd ..
+          cp -r MarketTime MarketTime-${VERSION}
+          tar -czf ~/rpmbuild/SOURCES/MarketTime-${VERSION}.tar.gz MarketTime-${VERSION}
+
+      - name: Build RPM packge
+        run: |
+          rpmbuild -ba ~/rpmbuild/SPECS/MarketTime.spec --define "version ${VERSION}"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - Created RPM package
+          draft: false
+          prerelease: false
+
+      - name: Find RPM package
+        run: echo "RPM_PATH=$(ls -1 ~/rpmbuild/RPMS/noarch/*.rpm | head -n 1)" >> $GITHUB_ENV
+
+      - name: Upload rpm package to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.RPM_PATH }}
+          asset_name: ${{ env.RPM_PATH }}
+          asset_content_type: application/octet-stream

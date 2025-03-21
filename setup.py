@@ -14,7 +14,7 @@ VERSION = "1.1.3"
 DESCRIPTION = "This is a tool to check the time in the market"
 LONG_DESCRIPTION = (HERE/"README.md").read_text(encoding="utf8")
 LONG_DESC_TYPE = "text/markdown"
-INSTALL_REQUIRES = ["datetime"]
+INSTALL_REQUIRES = []
 EXTRAS_REQUIRE = {}
 CLASSIFIERS = []
 PYTHON_REQUIRES = ">=3.10"
