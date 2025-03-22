@@ -1,10 +1,9 @@
-name: MarketTime Python Package Publish
+name: MarketTime Python Package Publish and Release to PYPI
 
 on:
   push:
-      tags:
-        - '*'
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
 jobs:
   build:
